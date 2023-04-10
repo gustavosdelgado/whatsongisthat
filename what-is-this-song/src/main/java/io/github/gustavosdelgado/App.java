@@ -1,15 +1,17 @@
+package io.github.gustavosdelgado;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.DataLine;
+
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 
-public class Solution {
-
+public class App {
     public static void main(String[] args) {
         AudioFormat format = new AudioFormat(44100f, 16, 1, true, true);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-        boolean stopped = false;
 
         try {
             TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
@@ -20,7 +22,6 @@ public class Solution {
 
             Thread audioRecordingThread = new Thread(() -> {
                 AudioInputStream recordingStream = new AudioInputStream(line);
-//                File output = new File("record.csv");
 
                 ByteArrayOutputStream output = new ByteArrayOutputStream();
                 try {
@@ -44,7 +45,6 @@ public class Solution {
             JOptionPane.showMessageDialog(null, "Hit ok to stop recording");
             line.stop();
             line.close();
-
 
         } catch (Exception e) {
             System.err.println("I/O problems: " + e);
