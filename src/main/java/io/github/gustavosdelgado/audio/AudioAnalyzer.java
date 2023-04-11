@@ -1,7 +1,5 @@
 package io.github.gustavosdelgado.audio;
 
-import io.github.gustavosdelgado.audio.AudioFormatBuilder;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.DataLine;
 
@@ -22,34 +20,15 @@ public class AudioAnalyzer {
 
             JOptionPane.showMessageDialog(null, "Hit ok to start recording");
             line.start();
-
-            Thread audioRecordingThread = new Thread(() -> {
-                AudioInputStream recordingStream = new AudioInputStream(line);
-
-                ByteArrayOutputStream output = new ByteArrayOutputStream();
-                try {
-                    AudioSystem.write(recordingStream, AudioFileFormat.Type.AU, output);
-
-                } catch (IOException e) {
-                    System.err.println("Recording failure: " + e);
-                }
-
-                byte[] byteArray = output.toByteArray();
-                for (byte b : byteArray) {
-                    System.out.print(b + ",");
-                }
-
-                System.out.println("Recording stopped.");
-
-            });
-
-            audioRecordingThread.start();
+            AudioRecorder recorder = new AudioRecorder(line);
+            recorder.start();
 
             JOptionPane.showMessageDialog(null, "Hit ok to stop recording");
             line.stop();
             line.close();
+
         } catch (LineUnavailableException e) {
-            throw new RuntimeException(e);
+            System.err.println("Recording failure: " + e);
         }
 
     }
