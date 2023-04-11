@@ -1,5 +1,6 @@
 package io.github.gustavosdelgado;
 
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import io.github.gustavosdelgado.audio.AudioAnalyzer;
 import io.github.gustavosdelgado.audio.AudioFormatBuilder;
 

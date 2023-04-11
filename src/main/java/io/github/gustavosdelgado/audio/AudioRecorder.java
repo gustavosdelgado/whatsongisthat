@@ -4,10 +4,14 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.TargetDataLine;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class AudioRecorder extends Thread {
+
+    private static final int CHUNK_SIZE = 4096;
 
     private TargetDataLine line;
 
@@ -26,11 +30,25 @@ public class AudioRecorder extends Thread {
             System.err.println("Recording failure: " + e);
         }
 
-        byte[] byteArray = output.toByteArray();
-        for (byte b : byteArray) {
-            System.out.print(b + ",");
-        }
+        performFFT(output);
 
         System.out.println("Recording stopped.");
+    }
+
+    private static void performFFT(ByteArrayOutputStream output) {
+        byte[] audio = output.toByteArray();
+        final int totalSize = audio.length;
+        int totalNumberOfChunks = totalSize / CHUNK_SIZE; // 4kb size chunk
+
+        Complex[][] results = new Complex[totalNumberOfChunks][];
+
+        for (int i = 0; i < totalNumberOfChunks; i++) { // for each 4kb size chunk,
+            Complex[] complex = new Complex[CHUNK_SIZE]; // create a complex number of 4kb size
+            for (int j = 0; j < CHUNK_SIZE; j++) {
+                complex[j] = new Complex(audio[(i * CHUNK_SIZE) + j], 0); // inside each complex containing the frequency, insert the time domain
+            }
+
+            results[i] = FFT.fft(complex); // Perform FFT analysis on each chunk:
+        }
     }
 }
