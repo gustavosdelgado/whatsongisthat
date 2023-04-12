@@ -4,7 +4,6 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.TargetDataLine;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -14,9 +13,9 @@ public class AudioRecorder extends Thread {
 
     private static final int[] RANGE = new int[] { 40, 80, 120, 180, 300 };
 
-    private static final int FUZ_FACTOR = 2;
+//    private static final int FUZ_FACTOR = 2;
 
-    private TargetDataLine line;
+    private final TargetDataLine line;
 
     public AudioRecorder(TargetDataLine line) {
         this.line = line;
@@ -24,20 +23,26 @@ public class AudioRecorder extends Thread {
 
     @Override
     public void run() {
-        AudioInputStream recordingStream = new AudioInputStream(line);
+        ByteArrayOutputStream output = record();
 
+        Complex[][] results = performFFT(output);
+
+        calculatePeakFrequencies(results);
+    }
+
+    private ByteArrayOutputStream record() {
+        AudioInputStream recordingStream = new AudioInputStream(line);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
+
         try {
+            System.out.println("Recording started");
             AudioSystem.write(recordingStream, AudioFileFormat.Type.AU, output);
         } catch (IOException e) {
             System.err.println("Recording failure: " + e);
         }
 
-        Complex[][] results = performFFT(output);
-
-        long[][] peakFrequencies = calculatePeakFrequencies(results);
-
         System.out.println("Recording stopped.");
+        return output;
     }
 
     private static Complex[][] performFFT(ByteArrayOutputStream output) {

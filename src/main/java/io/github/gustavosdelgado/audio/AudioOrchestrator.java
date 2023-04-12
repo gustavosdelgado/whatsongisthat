@@ -1,16 +1,21 @@
 package io.github.gustavosdelgado.audio;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.DataLine;
-
 import javax.sound.sampled.*;
 import javax.swing.*;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
-public class AudioAnalyzer {
+public class AudioOrchestrator {
 
-    public static void analyze() {
+    public static void handleAudio(String audioPath) {
+
+        if (audioPath == null) {
+            recordAudio();
+        } else {
+            // registerSong
+        }
+
+    }
+
+    private static void recordAudio() {
         AudioFormat format = AudioFormatBuilder.build();
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
@@ -30,6 +35,5 @@ public class AudioAnalyzer {
         } catch (LineUnavailableException e) {
             System.err.println("Recording failure: " + e);
         }
-
     }
 }
