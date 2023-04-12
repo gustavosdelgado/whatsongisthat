@@ -2,30 +2,41 @@ package io.github.gustavosdelgado.audio;
 
 import javax.sound.sampled.*;
 import javax.swing.*;
+import java.io.ByteArrayOutputStream;
 
 public class AudioOrchestrator {
 
-    public static void handleAudio(String audioPath) {
+    private static ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-        if (audioPath == null) {
-            recordAudio();
+    public static void handleAudio(String[] args) {
+
+        if (args.length == 0) {
+            record();
+            analyze();
+
         } else {
             // registerSong
         }
 
     }
 
-    private static void recordAudio() {
-        AudioFormat format = AudioFormatBuilder.build();
-        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+    private static void analyze() {
+        AudioAnalyzer analyzer = new AudioAnalyzer();
+        analyzer.analyze(output);
+    }
+
+    private static void record() {
 
         try {
+            AudioFormat format = AudioFormatBuilder.build();
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
             TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
             line.open(format);
 
             JOptionPane.showMessageDialog(null, "Hit ok to start recording");
             line.start();
-            AudioRecorder recorder = new AudioRecorder(line);
+
+            AudioRecorder recorder = new AudioRecorder(line, output);
             recorder.start();
 
             JOptionPane.showMessageDialog(null, "Hit ok to stop recording");

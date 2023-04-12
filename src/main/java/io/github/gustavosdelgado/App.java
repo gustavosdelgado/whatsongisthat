@@ -6,7 +6,7 @@ public class App {
     public static void main(String[] args) {
 
         try {
-            AudioOrchestrator.handleAudio(null);
+            AudioOrchestrator.handleAudio(args);
 
         } catch (Exception e) {
             System.err.println("Unexpected exception: " + e);
