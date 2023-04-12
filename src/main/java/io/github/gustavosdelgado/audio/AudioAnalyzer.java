@@ -1,6 +1,9 @@
 package io.github.gustavosdelgado.audio;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AudioAnalyzer {
 
@@ -8,9 +11,21 @@ public class AudioAnalyzer {
 
     private static final int[] RANGE = new int[]{40, 80, 120, 180, 300};
 
+    private static final int FUZ_FACTOR = 1;
+
     public void analyze(ByteArrayOutputStream output) {
         Complex[][] results = performFFT(output);
-        long[][] peakFrequencies = calculatePeakFrequencies(results);
+        Map<Long, Long> audioFingerprint = generateAudioFingerprint(results);
+        lookOutInSongDatabase(audioFingerprint);
+    }
+
+    private void lookOutInSongDatabase(Map<Long, Long> audioFingerprint) {
+        SongDatabaseSingleton databaseSingleton = SongDatabaseSingleton.getInstance();
+        Map<Long, List<SoundDataPoint>> songDatabase = databaseSingleton.getSongDatabase();
+
+        songDatabase.forEach((k, v) -> {
+            
+        });
     }
 
     private Complex[][] performFFT(ByteArrayOutputStream output) {
@@ -32,11 +47,13 @@ public class AudioAnalyzer {
         return results;
     }
 
-    private long[][] calculatePeakFrequencies(Complex[][] results) {
+    private Map<Long, Long> generateAudioFingerprint(Complex[][] results) {
         // SET 5 RANGES: 0~40, 40~80, 80~120, 120~180, 180~300
         // FOR EACH chunk, TAKE THE FREQUENCY PEAK FOR EACH RANGE
         long[][] peakFreq = new long[results.length][5];
         double[][] highestMag = new double[results.length][5];
+
+        Map<Long, Long> audioFingerprint = new HashMap<>();
 
         for (int i = 0; i < results.length; i++) { // for each chunk
 
@@ -52,9 +69,11 @@ public class AudioAnalyzer {
                     peakFreq[i][rangeIndex] = freq;
                 }
             }
+
+            audioFingerprint.put(genereateHash(peakFreq[i]), (long) i);
         }
 
-        return peakFreq;
+        return audioFingerprint;
     }
 
     public int getRangeIndex(int freq) {
@@ -62,5 +81,12 @@ public class AudioAnalyzer {
         while (RANGE[i] < freq)
             i++;
         return i;
+    }
+
+    protected long genereateHash(long[] p) {
+        return Long.parseLong((p[4] - (p[4] % FUZ_FACTOR)) + ""
+                + (p[3] - (p[3] % FUZ_FACTOR)) + ""
+                + (p[2] - (p[2] % FUZ_FACTOR)) + ""
+                + (p[1] - (p[1] % FUZ_FACTOR)));
     }
 }
