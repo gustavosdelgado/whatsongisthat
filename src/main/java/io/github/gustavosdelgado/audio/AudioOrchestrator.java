@@ -1,10 +1,12 @@
 package io.github.gustavosdelgado.audio;
 
 import io.github.gustavosdelgado.database.SongDatabaseSingleton;
+import io.github.gustavosdelgado.song.SongRegistrar;
 
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.io.ByteArrayOutputStream;
+import java.util.Scanner;
 
 public class AudioOrchestrator {
 
@@ -17,9 +19,22 @@ public class AudioOrchestrator {
             analyze();
 
         } else if (input == 2) {
-            // registerSong
+            register();
         }
 
+    }
+
+    private static void register() {
+        Scanner in = new Scanner(System.in);
+
+        System.out.println("Type the song name: ");
+        String songName = in.next();
+
+        System.out.println("Type the song ID: ");
+        int songId = in.nextInt();
+
+        SongRegistrar registrar = new SongRegistrar();
+        registrar.registerSong(songName, songId);
     }
 
     private static void analyze() {

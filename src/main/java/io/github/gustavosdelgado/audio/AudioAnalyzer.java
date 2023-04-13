@@ -27,8 +27,13 @@ public class AudioAnalyzer {
         return findMatchingSong(audioFingerprint);
     }
 
+    public Map<Long, Long> convertSongToAudioFingerprint(ByteArrayOutputStream output) {
+        Complex[][] complexes = performFFT(output);
+        return generateAudioFingerprint(complexes);
+    }
+
     protected String findMatchingSong(Map<Long, Long> audioFingerprint) {
-        Map<Long, List<SoundDataPoint>> songDatabase = databaseSingleton.getSongDatabase();
+        Map<Long, ArrayList<SoundDataPoint>> songDatabase = databaseSingleton.getSongDatabase();
         HashMap<String, HashMap<Long, Integer>> matchesRank = new HashMap<>();
 
         audioFingerprint.forEach((fingerprint, time) -> {
@@ -125,6 +130,7 @@ public class AudioAnalyzer {
         return Long.parseLong(new StringBuilder().append(p[4] - (p[4] % FUZ_FACTOR))
                 .append(p[3] - (p[3] % FUZ_FACTOR))
                 .append(p[2] - (p[2] % FUZ_FACTOR))
-                .append(p[1] - (p[1] % FUZ_FACTOR)).toString());
+                .append(p[1] - (p[1] % FUZ_FACTOR))
+                .append(p[0] - (p[0] % FUZ_FACTOR)).toString());
     }
 }
