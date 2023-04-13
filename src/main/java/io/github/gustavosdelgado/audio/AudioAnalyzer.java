@@ -11,7 +11,13 @@ public class AudioAnalyzer {
 
     private static final int[] RANGE = new int[]{40, 80, 120, 180, 300};
 
-    private static final int FUZ_FACTOR = 1;
+    private static final int FUZ_FACTOR = 2;
+
+    private SongDatabaseSingleton databaseSingleton;
+
+    public AudioAnalyzer(SongDatabaseSingleton databaseSingleton) {
+        this.databaseSingleton = databaseSingleton;
+    }
 
     public void analyze(ByteArrayOutputStream output) {
         Complex[][] results = performFFT(output);
@@ -19,13 +25,43 @@ public class AudioAnalyzer {
         lookOutInSongDatabase(audioFingerprint);
     }
 
-    private void lookOutInSongDatabase(Map<Long, Long> audioFingerprint) {
-        SongDatabaseSingleton databaseSingleton = SongDatabaseSingleton.getInstance();
+    protected String lookOutInSongDatabase(Map<Long, Long> audioFingerprint) {
         Map<Long, List<SoundDataPoint>> songDatabase = databaseSingleton.getSongDatabase();
+        HashMap<String, HashMap<Long, Integer>> matchesRank = new HashMap<>();
 
-        songDatabase.forEach((k, v) -> {
-            
+        audioFingerprint.forEach((fingerprint, time) -> {
+            List<SoundDataPoint> matches = songDatabase.get(fingerprint);
+
+            for (SoundDataPoint match : matches) {
+                long offset = Math.abs(match.getTime() - time);
+
+                HashMap<Long, Integer> matchRankOccurence = matchesRank.get(match.getSongName());
+                if (matchRankOccurence == null) {
+                    matchRankOccurence = new HashMap<>();
+                    matchRankOccurence.put(offset, 1);
+                    matchesRank.put(match.getSongName(), matchRankOccurence);
+                } else if (matchRankOccurence.get(offset) != null) {
+                    matchRankOccurence.put(offset, matchRankOccurence.get(offset) + 1);
+                } else {
+                    matchRankOccurence.put(offset, 1);
+                }
+            }
+
         });
+
+        long maxOffsetHit = 0;
+        String mostLikelySongName = "";
+
+        for (HashMap.Entry<String, HashMap<Long, Integer>> match : matchesRank.entrySet()) {
+            for (Map.Entry<Long, Integer> offsetHit : match.getValue().entrySet()) {
+                if (offsetHit.getValue() > maxOffsetHit) {
+                    maxOffsetHit = offsetHit.getValue();
+                    mostLikelySongName = match.getKey();
+                }
+            }
+        }
+
+        return mostLikelySongName;
     }
 
     private Complex[][] performFFT(ByteArrayOutputStream output) {
@@ -84,9 +120,9 @@ public class AudioAnalyzer {
     }
 
     protected long genereateHash(long[] p) {
-        return Long.parseLong((p[4] - (p[4] % FUZ_FACTOR)) + ""
-                + (p[3] - (p[3] % FUZ_FACTOR)) + ""
-                + (p[2] - (p[2] % FUZ_FACTOR)) + ""
-                + (p[1] - (p[1] % FUZ_FACTOR)));
+        return Long.parseLong(new StringBuilder().append(p[4] - (p[4] % FUZ_FACTOR))
+                .append(p[3] - (p[3] % FUZ_FACTOR))
+                .append(p[2] - (p[2] % FUZ_FACTOR))
+                .append(p[1] - (p[1] % FUZ_FACTOR)).toString());
     }
 }

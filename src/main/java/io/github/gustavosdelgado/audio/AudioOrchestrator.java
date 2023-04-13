@@ -21,7 +21,7 @@ public class AudioOrchestrator {
     }
 
     private static void analyze() {
-        AudioAnalyzer analyzer = new AudioAnalyzer();
+        AudioAnalyzer analyzer = new AudioAnalyzer(SongDatabaseSingleton.getInstance());
         analyzer.analyze(output);
     }
 
