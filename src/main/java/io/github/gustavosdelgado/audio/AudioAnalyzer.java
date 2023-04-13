@@ -5,9 +5,7 @@ import io.github.gustavosdelgado.model.Complex;
 import io.github.gustavosdelgado.model.SoundDataPoint;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AudioAnalyzer {
 
@@ -34,9 +32,9 @@ public class AudioAnalyzer {
         HashMap<String, HashMap<Long, Integer>> matchesRank = new HashMap<>();
 
         audioFingerprint.forEach((fingerprint, time) -> {
-            List<SoundDataPoint> matches = songDatabase.get(fingerprint);
+            List<SoundDataPoint> matches = Optional.ofNullable(songDatabase.get(fingerprint)).orElse(new ArrayList<>());
 
-            for (SoundDataPoint match : matches) {
+            matches.forEach(match -> {
                 long offset = Math.abs(match.getTime() - time);
 
                 HashMap<Long, Integer> matchRankOccurence = matchesRank.get(match.getSongName());
@@ -49,7 +47,7 @@ public class AudioAnalyzer {
                 } else {
                     matchRankOccurence.put(offset, 1);
                 }
-            }
+            });
 
         });
 
@@ -65,7 +63,7 @@ public class AudioAnalyzer {
             }
         }
 
-        return mostLikelySongName;
+        return mostLikelySongName.isEmpty() ? "Song not found" : mostLikelySongName;
     }
 
     private Complex[][] performFFT(ByteArrayOutputStream output) {

@@ -3,6 +3,7 @@ package io.github.gustavosdelgado.database;
 import io.github.gustavosdelgado.model.SoundDataPoint;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,8 @@ public final class SongDatabaseSingleton {
     }
 
     public Map<Long, List<SoundDataPoint>> getSongDatabase() {
+        if (songDatabase == null) songDatabase = new HashMap<>();
+        
         return songDatabase;
     }
 

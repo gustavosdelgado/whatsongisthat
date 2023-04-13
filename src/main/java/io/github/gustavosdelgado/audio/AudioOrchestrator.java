@@ -10,13 +10,13 @@ public class AudioOrchestrator {
 
     private static ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-    public static void handleAudio(String[] args) {
+    public static void handleAudio(int input) {
 
-        if (args.length == 0) {
+        if (input == 1) {
             record();
             analyze();
 
-        } else {
+        } else if (input == 2) {
             // registerSong
         }
 
@@ -24,7 +24,7 @@ public class AudioOrchestrator {
 
     private static void analyze() {
         AudioAnalyzer analyzer = new AudioAnalyzer(SongDatabaseSingleton.getInstance());
-        analyzer.findMatchingSong(output);
+        System.out.println("Song name: " + analyzer.findMatchingSong(output));
     }
 
     private static void record() {
