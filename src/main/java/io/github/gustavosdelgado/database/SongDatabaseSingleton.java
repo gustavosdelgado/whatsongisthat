@@ -1,4 +1,6 @@
-package io.github.gustavosdelgado.audio;
+package io.github.gustavosdelgado.database;
+
+import io.github.gustavosdelgado.model.SoundDataPoint;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.github.gustavosdelgado.audio;
+package io.github.gustavosdelgado.model;
 
 public class SoundDataPoint {
 

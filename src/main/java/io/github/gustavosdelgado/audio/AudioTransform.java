@@ -1,13 +1,21 @@
 package io.github.gustavosdelgado.audio;
 
-public class FFT {
+import io.github.gustavosdelgado.model.Complex;
 
+/**
+ * Fast-Fourier Transform algorithm
+ */
+public class AudioTransform {
+
+    /**
+     * Method to convert a time domain sequence into a frequency domain.
+     */
     public static Complex[] fft(Complex[] x) {
         int N = x.length;
 
         // base case
         if (N == 1)
-            return new Complex[] { x[0] };
+            return new Complex[]{x[0]};
 
         // radix 2 Cooley-Tukey FFT
         if (N % 2 != 0) {

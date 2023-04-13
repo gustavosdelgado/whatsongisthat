@@ -1,5 +1,9 @@
 package io.github.gustavosdelgado.audio;
 
+import io.github.gustavosdelgado.database.SongDatabaseSingleton;
+import io.github.gustavosdelgado.model.Complex;
+import io.github.gustavosdelgado.model.SoundDataPoint;
+
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +23,13 @@ public class AudioAnalyzer {
         this.databaseSingleton = databaseSingleton;
     }
 
-    public void analyze(ByteArrayOutputStream output) {
+    public String findMatchingSong(ByteArrayOutputStream output) {
         Complex[][] results = performFFT(output);
         Map<Long, Long> audioFingerprint = generateAudioFingerprint(results);
-        lookOutInSongDatabase(audioFingerprint);
+        return findMatchingSong(audioFingerprint);
     }
 
-    protected String lookOutInSongDatabase(Map<Long, Long> audioFingerprint) {
+    protected String findMatchingSong(Map<Long, Long> audioFingerprint) {
         Map<Long, List<SoundDataPoint>> songDatabase = databaseSingleton.getSongDatabase();
         HashMap<String, HashMap<Long, Integer>> matchesRank = new HashMap<>();
 
@@ -77,7 +81,7 @@ public class AudioAnalyzer {
                 complex[j] = new Complex(audio[(i * CHUNK_SIZE) + j], 0); // inside each complex containing the frequency, insert the time domain
             }
 
-            results[i] = FFT.fft(complex); // Perform FFT analysis on each chunk:
+            results[i] = AudioTransform.fft(complex); // Perform FFT analysis on each chunk:
         }
 
         return results;
@@ -106,20 +110,20 @@ public class AudioAnalyzer {
                 }
             }
 
-            audioFingerprint.put(genereateHash(peakFreq[i]), (long) i);
+            audioFingerprint.put(generateHash(peakFreq[i]), (long) i);
         }
 
         return audioFingerprint;
     }
 
-    public int getRangeIndex(int freq) {
+    private int getRangeIndex(int freq) {
         int i = 0;
         while (RANGE[i] < freq)
             i++;
         return i;
     }
 
-    protected long genereateHash(long[] p) {
+    protected long generateHash(long[] p) {
         return Long.parseLong(new StringBuilder().append(p[4] - (p[4] % FUZ_FACTOR))
                 .append(p[3] - (p[3] % FUZ_FACTOR))
                 .append(p[2] - (p[2] % FUZ_FACTOR))

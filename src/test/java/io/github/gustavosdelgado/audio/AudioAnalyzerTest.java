@@ -1,5 +1,7 @@
 package io.github.gustavosdelgado.audio;
 
+import io.github.gustavosdelgado.database.SongDatabaseSingleton;
+import io.github.gustavosdelgado.model.SoundDataPoint;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +55,7 @@ public class AudioAnalyzerTest {
 
     @Test
     public void calculateHash() {
-        assertEquals(1801379447, analyzer.genereateHash(new long[]{33, 47, 94, 137, 180}));
+        assertEquals(1801369446, analyzer.generateHash(new long[]{33, 47, 94, 137, 180}));
     }
 
     @Test
@@ -62,7 +64,7 @@ public class AudioAnalyzerTest {
         audioFingerprint.put(123456789L, 1L);
         audioFingerprint.put(666666666L, 2L);
         audioFingerprint.put(777777777L, 3L);
-        Assert.assertEquals("songName1", analyzer.lookOutInSongDatabase(audioFingerprint));
+        Assert.assertEquals("songName1", analyzer.findMatchingSong(audioFingerprint));
     }
 
 }

@@ -1,5 +1,7 @@
 package io.github.gustavosdelgado.audio;
 
+import io.github.gustavosdelgado.database.SongDatabaseSingleton;
+
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.io.ByteArrayOutputStream;
@@ -22,7 +24,7 @@ public class AudioOrchestrator {
 
     private static void analyze() {
         AudioAnalyzer analyzer = new AudioAnalyzer(SongDatabaseSingleton.getInstance());
-        analyzer.analyze(output);
+        analyzer.findMatchingSong(output);
     }
 
     private static void record() {
