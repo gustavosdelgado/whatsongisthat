@@ -10,9 +10,9 @@ import java.util.Scanner;
 
 public class AudioOrchestrator {
 
-    private static ByteArrayOutputStream output = new ByteArrayOutputStream();
+    private ByteArrayOutputStream output;
 
-    public static void handleAudio(int input) {
+    public void handleAudio(int input) {
 
         if (input == 1) {
             record();
@@ -37,12 +37,12 @@ public class AudioOrchestrator {
         registrar.registerSong(songName, songId);
     }
 
-    private static void analyze() {
+    private void analyze() {
         AudioAnalyzer analyzer = new AudioAnalyzer(SongDatabaseSingleton.getInstance());
         System.out.println("Song name: " + analyzer.findMatchingSong(output));
     }
 
-    private static void record() {
+    private void record() {
 
         try {
             AudioFormat format = AudioFormatBuilder.build();
@@ -53,6 +53,7 @@ public class AudioOrchestrator {
             JOptionPane.showMessageDialog(null, "Hit ok to start recording");
             line.start();
 
+            output = new ByteArrayOutputStream();
             AudioRecorder recorder = new AudioRecorder(line, output);
             recorder.start();
 

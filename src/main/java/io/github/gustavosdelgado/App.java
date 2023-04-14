@@ -14,7 +14,8 @@ public class App {
         while (input != 0) {
             System.out.println("Type the chosen option: 0 - exit 1 - song matching, 2 - Song recording");
             input = in.nextInt();
-            AudioOrchestrator.handleAudio(input);
+            AudioOrchestrator audio = new AudioOrchestrator();
+            audio.handleAudio(input);
         }
 
     }
